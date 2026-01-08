@@ -168,4 +168,3 @@ func ExampleFalkorDB_ConfigGet() {
 	// Set configuration
 	db.ConfigSet(ctx, "RESULTSET_SIZE", 10000)
 }
-

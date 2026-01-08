@@ -72,4 +72,3 @@
 //
 // All types in this package are safe for concurrent use.
 package falkordb
-

@@ -207,39 +207,66 @@ func (p *resultParser) parsePath(value interface{}) *Path {
 		return nil
 	}
 
-	path := &Path{}
-
-	// Parse nodes: arr[0] = [ArrayType, [node1, node2, ...]]
-	if nodesWrapper, ok := arr[0].([]interface{}); ok && len(nodesWrapper) >= 2 {
-		if nodesArr, ok := nodesWrapper[1].([]interface{}); ok {
-			for _, n := range nodesArr {
-				// Each node is [NodeType, node_data]
-				if nodeArr, ok := n.([]interface{}); ok && len(nodeArr) >= 2 {
-					node := p.parseNode(nodeArr[1])
-					if node != nil {
-						path.Nodes = append(path.Nodes, node)
-					}
-				}
-			}
-		}
+	path := &Path{
+		Nodes: p.parsePathNodes(arr[0]),
+		Edges: p.parsePathEdges(arr[1]),
 	}
-
-	// Parse edges: arr[1] = [ArrayType, [edge1, edge2, ...]]
-	if edgesWrapper, ok := arr[1].([]interface{}); ok && len(edgesWrapper) >= 2 {
-		if edgesArr, ok := edgesWrapper[1].([]interface{}); ok {
-			for _, e := range edgesArr {
-				// Each edge is [EdgeType, edge_data]
-				if edgeArr, ok := e.([]interface{}); ok && len(edgeArr) >= 2 {
-					edge := p.parseEdge(edgeArr[1])
-					if edge != nil {
-						path.Edges = append(path.Edges, edge)
-					}
-				}
-			}
-		}
-	}
-
 	return path
+}
+
+// parsePathNodes extracts nodes from a path wrapper: [ArrayType, [node1, node2, ...]]
+func (p *resultParser) parsePathNodes(wrapper interface{}) []*Node {
+	items := unwrapArray(wrapper)
+	if items == nil {
+		return nil
+	}
+
+	var nodes []*Node
+	for _, item := range items {
+		if data := unwrapTypedValue(item); data != nil {
+			if node := p.parseNode(data); node != nil {
+				nodes = append(nodes, node)
+			}
+		}
+	}
+	return nodes
+}
+
+// parsePathEdges extracts edges from a path wrapper: [ArrayType, [edge1, edge2, ...]]
+func (p *resultParser) parsePathEdges(wrapper interface{}) []*Edge {
+	items := unwrapArray(wrapper)
+	if items == nil {
+		return nil
+	}
+
+	var edges []*Edge
+	for _, item := range items {
+		if data := unwrapTypedValue(item); data != nil {
+			if edge := p.parseEdge(data); edge != nil {
+				edges = append(edges, edge)
+			}
+		}
+	}
+	return edges
+}
+
+// unwrapArray extracts the inner array from [ArrayType, [...items]]
+func unwrapArray(wrapper interface{}) []interface{} {
+	arr, ok := wrapper.([]interface{})
+	if !ok || len(arr) < 2 {
+		return nil
+	}
+	items, _ := arr[1].([]interface{})
+	return items
+}
+
+// unwrapTypedValue extracts data from [Type, data]
+func unwrapTypedValue(typed interface{}) interface{} {
+	arr, ok := typed.([]interface{})
+	if !ok || len(arr) < 2 {
+		return nil
+	}
+	return arr[1]
 }
 
 func (p *resultParser) parseMap(value interface{}) map[string]interface{} {
@@ -309,4 +336,3 @@ func (p *resultParser) updateMetadata(labels, relTypes, propertyKeys []string) {
 		p.propertyKeys = propertyKeys
 	}
 }
-

@@ -112,13 +112,13 @@ func (p *Point) String() string {
 
 // Duration represents a temporal duration.
 type Duration struct {
-	Years        int
-	Months       int
-	Days         int
-	Hours        int
-	Minutes      int
-	Seconds      int
-	Nanoseconds  int
+	Years       int
+	Months      int
+	Days        int
+	Hours       int
+	Minutes     int
+	Seconds     int
+	Nanoseconds int
 }
 
 // ToDuration converts to a standard time.Duration.

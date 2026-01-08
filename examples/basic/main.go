@@ -11,20 +11,37 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Connect to FalkorDB
+	db, graph := setup(ctx)
+	defer db.Close()
+	defer cleanup(ctx, graph)
+
+	createData(ctx, graph)
+	queryPeople(ctx, graph)
+	queryRelationships(ctx, graph)
+	queryPaths(ctx, graph)
+	demonstrateIndexes(ctx, graph)
+	showServerInfo(ctx, db)
+}
+
+func setup(ctx context.Context) (*falkordb.FalkorDB, *falkordb.Graph) {
 	db, err := falkordb.Connect(ctx, &falkordb.Options{
 		Addr: "localhost:6379",
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
-	defer db.Close()
+	return db, db.SelectGraph("social")
+}
 
-	// Select a graph
-	graph := db.SelectGraph("social")
+func cleanup(ctx context.Context, graph *falkordb.Graph) {
+	if err := graph.Delete(ctx); err != nil {
+		log.Printf("Failed to delete graph: %v", err)
+	}
+	fmt.Println("\nGraph deleted successfully")
+}
 
-	// Create some nodes and relationships
-	_, err = graph.Query(ctx, `
+func createData(ctx context.Context, graph *falkordb.Graph) {
+	_, err := graph.Query(ctx, `
 		CREATE (alice:Person {name: 'Alice', age: 30})
 		CREATE (bob:Person {name: 'Bob', age: 25})
 		CREATE (charlie:Person {name: 'Charlie', age: 35})
@@ -36,15 +53,12 @@ func main() {
 		log.Fatalf("Failed to create data: %v", err)
 	}
 	fmt.Println("Created nodes and relationships")
+}
 
-	// Query with parameters
+func queryPeople(ctx context.Context, graph *falkordb.Graph) {
 	result, err := graph.Query(ctx,
 		"MATCH (p:Person) WHERE p.age > $minAge RETURN p.name, p.age ORDER BY p.age",
-		&falkordb.QueryOptions{
-			Params: map[string]interface{}{
-				"minAge": 26,
-			},
-		},
+		&falkordb.QueryOptions{Params: map[string]interface{}{"minAge": 26}},
 	)
 	if err != nil {
 		log.Fatalf("Failed to query: %v", err)
@@ -54,9 +68,10 @@ func main() {
 	for _, row := range result.Data {
 		fmt.Printf("  %s (age %v)\n", row["p.name"], row["p.age"])
 	}
+}
 
-	// Query relationships
-	result, err = graph.Query(ctx, `
+func queryRelationships(ctx context.Context, graph *falkordb.Graph) {
+	result, err := graph.Query(ctx, `
 		MATCH (p:Person)-[r:KNOWS]->(friend:Person)
 		RETURN p.name, friend.name, r.since
 	`)
@@ -68,9 +83,10 @@ func main() {
 	for _, row := range result.Data {
 		fmt.Printf("  %s knows %s since %v\n", row["p.name"], row["friend.name"], row["r.since"])
 	}
+}
 
-	// Get a path
-	result, err = graph.Query(ctx, `
+func queryPaths(ctx context.Context, graph *falkordb.Graph) {
+	result, err := graph.Query(ctx, `
 		MATCH path = (a:Person {name: 'Alice'})-[:KNOWS*]->(c:Person {name: 'Charlie'})
 		RETURN path
 	`)
@@ -83,10 +99,11 @@ func main() {
 		path := row["path"].(*falkordb.Path)
 		fmt.Printf("  Path with %d nodes and %d edges\n", len(path.Nodes), len(path.Edges))
 	}
+}
 
+func demonstrateIndexes(ctx context.Context, graph *falkordb.Graph) {
 	// Create an index
-	_, err = graph.CreateNodeRangeIndex(ctx, "Person", "name")
-	if err != nil {
+	if _, err := graph.CreateNodeRangeIndex(ctx, "Person", "name"); err != nil {
 		log.Printf("Index may already exist: %v", err)
 	}
 
@@ -95,7 +112,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to explain: %v", err)
 	}
-
 	fmt.Println("\nQuery execution plan:")
 	for _, step := range plan {
 		fmt.Printf("  %s\n", step)
@@ -106,7 +122,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to profile: %v", err)
 	}
-
 	fmt.Println("\nQuery profile:")
 	for _, step := range profile {
 		fmt.Printf("  %s\n", step)
@@ -117,29 +132,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to get slow log: %v", err)
 	}
-
 	fmt.Println("\nSlow log entries:", len(slowLog))
+}
 
-	// List all graphs
+func showServerInfo(ctx context.Context, db *falkordb.FalkorDB) {
 	graphs, err := db.List(ctx)
 	if err != nil {
 		log.Fatalf("Failed to list graphs: %v", err)
 	}
-
 	fmt.Println("\nAvailable graphs:", graphs)
 
-	// Get server info
 	info, err := db.Info(ctx)
 	if err != nil {
 		log.Fatalf("Failed to get info: %v", err)
 	}
-
 	fmt.Printf("\nServer info (first 200 chars): %.200s...\n", info)
-
-	// Clean up
-	err = graph.Delete(ctx)
-	if err != nil {
-		log.Fatalf("Failed to delete graph: %v", err)
-	}
-	fmt.Println("\nGraph deleted successfully")
 }

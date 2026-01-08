@@ -190,4 +190,3 @@ func parseMasterAddr(masters interface{}) string {
 	}
 	return ""
 }
-

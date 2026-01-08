@@ -61,4 +61,3 @@ type QueryOptions struct {
 	// A value of 0 means no timeout.
 	Timeout int
 }
-

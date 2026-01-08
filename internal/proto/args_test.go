@@ -119,4 +119,3 @@ func TestBuildIndexArgs(t *testing.T) {
 		t.Errorf("Expected at least 10 args for vector index, got %d", len(args))
 	}
 }
-
