@@ -1,4 +1,4 @@
-module github.com/FalkorDB/falkordb-go
+module github.com/flancast90/falkordb-go
 
 go 1.22
 

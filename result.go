@@ -3,7 +3,7 @@ package falkordb
 import (
 	"fmt"
 
-	"github.com/FalkorDB/falkordb-go/internal/proto"
+	"github.com/flancast90/falkordb-go/internal/proto"
 )
 
 // QueryResult represents the result of a Cypher query.

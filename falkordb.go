@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/FalkorDB/falkordb-go/internal/redis"
+	"github.com/flancast90/falkordb-go/internal/redis"
 )
 
 // FalkorDB is the main client for interacting with FalkorDB.

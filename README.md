@@ -1,7 +1,7 @@
 # FalkorDB Go Client
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/FalkorDB/falkordb-go.svg)](https://pkg.go.dev/github.com/FalkorDB/falkordb-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/FalkorDB/falkordb-go)](https://goreportcard.com/report/github.com/FalkorDB/falkordb-go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/flancast90/falkordb-go.svg)](https://pkg.go.dev/github.com/flancast90/falkordb-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/flancast90/falkordb-go)](https://goreportcard.com/report/github.com/flancast90/falkordb-go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Go client library for [FalkorDB](https://falkordb.com), a high-performance graph database built on Redis.
@@ -21,7 +21,7 @@ A Go client library for [FalkorDB](https://falkordb.com), a high-performance gra
 ## Installation
 
 ```bash
-go get github.com/FalkorDB/falkordb-go
+go get github.com/flancast90/falkordb-go
 ```
 
 Requires Go 1.22 or later.
@@ -36,7 +36,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/FalkorDB/falkordb-go"
+    "github.com/flancast90/falkordb-go"
 )
 
 func main() {

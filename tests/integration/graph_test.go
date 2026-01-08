@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FalkorDB/falkordb-go"
+	"github.com/flancast90/falkordb-go"
 )
 
 func init() {

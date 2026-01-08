@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	falkordb "github.com/FalkorDB/falkordb-go"
+	falkordb "github.com/flancast90/falkordb-go"
 )
 
 func main() {

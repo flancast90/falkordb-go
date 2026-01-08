@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/FalkorDB/falkordb-go/internal/proto"
-	"github.com/FalkorDB/falkordb-go/internal/redis"
+	"github.com/flancast90/falkordb-go/internal/proto"
+	"github.com/flancast90/falkordb-go/internal/redis"
 )
 
 // Graph represents a FalkorDB graph and provides methods to interact with it.

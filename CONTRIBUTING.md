@@ -166,7 +166,7 @@ For feature requests:
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/FalkorDB/falkordb-go/discussions)
+- Open a [GitHub Discussion](https://github.com/flancast90/falkordb-go/discussions)
 - Check [FalkorDB Documentation](https://docs.falkordb.com)
 
 ## License
